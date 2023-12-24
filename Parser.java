@@ -1,16 +1,41 @@
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.*;
-import java.io.IOException;
-
 public class Parser {
-    private static final Set<String> KEYWORDS = new HashSet<>(Arrays.asList("if", "else", "while", "int", "float"));
-    private static final Set<String> OPERATORS = new HashSet<>(Arrays.asList("+", "-", "*", "/"));
-    private static final Set<String> PUNCTUATION = new HashSet<>(Arrays.asList("(", ")", "{", "}", ";"));
+    private static final Map<String, String> TOKEN_CLASSES = new HashMap<>();
+    static {
+        TOKEN_CLASSES.put("if", "KEYWORD");
+        TOKEN_CLASSES.put("else", "KEYWORD");
+        TOKEN_CLASSES.put("while", "KEYWORD");
+        TOKEN_CLASSES.put("int", "KEYWORD");
+        TOKEN_CLASSES.put("float", "KEYWORD");
+        TOKEN_CLASSES.put("+", "OP");
+        TOKEN_CLASSES.put("-", "OP");
+        TOKEN_CLASSES.put("*", "OP");
+        TOKEN_CLASSES.put("/", "OP");
+        TOKEN_CLASSES.put("(", "LPAR");
+        TOKEN_CLASSES.put(")", "RPAR");
+        TOKEN_CLASSES.put("{", "LBRACE");
+        TOKEN_CLASSES.put("}", "RBRACE");
+        TOKEN_CLASSES.put(";", "SEMICOLON");
+        TOKEN_CLASSES.put(">", "RELOP");
+        TOKEN_CLASSES.put("<", "RELOP");
+        TOKEN_CLASSES.put(">=", "RELOP");
+        TOKEN_CLASSES.put("<=", "RELOP");
+        TOKEN_CLASSES.put("==", "RELOP");
+        TOKEN_CLASSES.put("=", "RELOP");
+    }
 
     public static void tokenize(String input) {
-        
-        input = input.replaceAll("(?:/\\*(?:[^*]|(?:\\*+[^*/]))*\\*+/)|(?://.*)", "")
+
+        boolean inQuotes = false;
+        StringBuilder modifiedInput = new StringBuilder();
+        for (char c : input.toCharArray()) {
+            if (c == '\"') inQuotes = !inQuotes;
+            if (inQuotes && c == ' ') modifiedInput.append("FUCKYOU!");
+            else modifiedInput.append(c);
+        }
+    
+        input = modifiedInput.toString()
+                .replaceAll("(?:/\\*(?:[^*]|(?:\\*+[^*/]))*\\*+/)|(?://.*)", "")
                 .replaceAll("\"(.*?)\"", " \"$1\" ")
                 .replace("+", " + ")
                 .replace("-", " - ")
@@ -21,107 +46,31 @@ public class Parser {
                 .replace("{", " { ")
                 .replace("}", " } ")
                 .replace(";", " ; ");
-
-                
-
+    
         String[] parts = input.split("\\s+");
         List<String> tokens = new ArrayList<>();
-
+    
         for (String part : parts) {
+            if(part==" ") continue;
             if (part.startsWith("\"") && part.endsWith("\"")) {
-                tokens.add(part + ", STRING_LITERAL");
-            } else if (KEYWORDS.contains(part)) {
-                tokens.add(part + ", KEYWORD");
-            } else if (OPERATORS.contains(part)) {
-                tokens.add(part + ", OPERATOR");
-            } else if (PUNCTUATION.contains(part)) {
-                tokens.add(part + ", PUNCTUATION");
-            } else if (part.matches("[a-zA-Z_][a-zA-Z0-9_]*")) {
-                tokens.add(part + ", IDENTIFIER");
-            } else if (part.matches("[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?")) {
-                tokens.add(part + ", NUMBER");
+                part=part.replace("FUCKYOU!"," ");
+                System.out.println("<STRING, " + part + ">");
+            } else if (TOKEN_CLASSES.containsKey(part)) {
+                System.out.println("<" + TOKEN_CLASSES.get(part) + ", " + part + ">");
+            } else if (part.startsWith("//")) {
+                System.out.println("<COMMENT, " + part + ">");
+            }else if(part.matches("[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?")){
+                System.out.println("<NUMBER, "+ part+">");
             } else {
-                tokens.add(part + ", UNKNOWN");
+                System.out.println("<UNKNOWN, " + part + ">");
             }
         }
-
-        for (String token : tokens) {
-            System.out.println("< "+token+" >");
-        }
     }
+
+
 
     public static void main(String[] args) {
-        try {
-            String input = new String(Files.readAllBytes(Paths.get("input.txt")));
-            tokenize(input);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        String input = " if ( x >= 0 ) { print ( \"Hello World\" ) ; } else { int sum = 0 ; for ( int i = 0 ; i < 10 ; i = i + 1 ) { sum = i + 12.34 + 21E-2 + .21 ; } } ;";
+        tokenize(input);  
     }
 }
-
-
-
-/*
- * 
- * import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.io.IOException;
-
-public class Parser {
-    private static final Set<String> KEYWORDS = new HashSet<>(Arrays.asList("if", "else", "while", "int", "float"));
-    private static final Set<String> OPERATORS = new HashSet<>(Arrays.asList("+", "-", "*", "/"));
-    private static final Set<String> PUNCTUATION = new HashSet<>(Arrays.asList("(", ")", "{", "}", ";"));
-
-    public static void tokenize(String input) {
-        String[] parts = input.split("\\s+");
-        Map<String, List<String>> tokens = new LinkedHashMap<>();
-
-        for (String part : parts) {
-            if (KEYWORDS.contains(part)) {
-                addToMap(tokens, part, "KEYWORD");
-            } else if (OPERATORS.contains(part)) {
-                addToMap(tokens, part, "OPERATOR");
-            } else if (PUNCTUATION.contains(part)) {
-                addToMap(tokens, part, "PUNCTUATION");
-            } else if (part.matches("[a-zA-Z_][a-zA-Z0-9_]*")) {
-                addToMap(tokens, part, "IDENTIFIER");
-            } else if (part.matches("[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?")) {
-                addToMap(tokens, part, "NUMBER");
-            } else {
-                addToMap(tokens, part, "UNKNOWN");
-            }
-        }
-
-        for (Map.Entry<String, List<String>> entry : tokens.entrySet()) {
-            for (String value : entry.getValue()) {
-                System.out.println("<" + value + ", " + entry.getKey() + ">");
-            }
-        }
-    }
-
-    private static void addToMap(Map<String, List<String>> map, String key, String value) {
-        map.computeIfAbsent(key, k -> new LinkedList<>()).add(value);
-    }
-
-    public static void main(String[] args) {
-        try {
-            String input = new String(Files.readAllBytes(Paths.get("input.txt")));
-            tokenize(input);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-}
-
- * 
- * 
- */

@@ -1,9 +1,1 @@
-if(x == 0){
-print ( “Hello World” ); 
-}else{
-int sum=0;
-for(int i=0 ; i< 10; i=i+1)
-{
-sum=i+12.34+21E-2+.21;
-} 
-};
+if ( x >= 0 ) { print ( “Hello World” ) ; } else { int sum = 0 ; for ( int i = 0 ; i < 10 ; i = i + 1 ) { sum = i + 12.34 + 21E-2 + .21 ; } } ;
