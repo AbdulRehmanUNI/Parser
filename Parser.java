@@ -9,8 +9,9 @@ public class Parser {
     private static final Set<String> PUNCTUATION = new HashSet<>(Arrays.asList("(", ")", "{", "}", ";"));
 
     public static void tokenize(String input) {
+        
         input = input.replaceAll("(?:/\\*(?:[^*]|(?:\\*+[^*/]))*\\*+/)|(?://.*)", "")
-                .replaceAll("(\".*?\")", " $1 ")
+                .replaceAll("\"(.*?)\"", " \"$1\" ")
                 .replace("+", " + ")
                 .replace("-", " - ")
                 .replace("*", " * ")
@@ -28,19 +29,19 @@ public class Parser {
 
         for (String part : parts) {
             if (part.startsWith("\"") && part.endsWith("\"")) {
-                tokens.add(part + " STRING_LITERAL");
+                tokens.add(part + ", STRING_LITERAL");
             } else if (KEYWORDS.contains(part)) {
-                tokens.add(part + " KEYWORD");
+                tokens.add(part + ", KEYWORD");
             } else if (OPERATORS.contains(part)) {
-                tokens.add(part + " OPERATOR");
+                tokens.add(part + ", OPERATOR");
             } else if (PUNCTUATION.contains(part)) {
-                tokens.add(part + " PUNCTUATION");
+                tokens.add(part + ", PUNCTUATION");
             } else if (part.matches("[a-zA-Z_][a-zA-Z0-9_]*")) {
-                tokens.add(part + " IDENTIFIER");
+                tokens.add(part + ", IDENTIFIER");
             } else if (part.matches("[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?")) {
-                tokens.add(part + " NUMBER");
+                tokens.add(part + ", NUMBER");
             } else {
-                tokens.add(part + " UNKNOWN");
+                tokens.add(part + ", UNKNOWN");
             }
         }
 
