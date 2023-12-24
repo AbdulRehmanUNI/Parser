@@ -1,13 +1,6 @@
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.io.IOException;
 
 public class Parser {
@@ -16,6 +9,20 @@ public class Parser {
     private static final Set<String> PUNCTUATION = new HashSet<>(Arrays.asList("(", ")", "{", "}", ";"));
 
     public static void tokenize(String input) {
+        input = input.replaceAll("(?:/\\*(?:[^*]|(?:\\*+[^*/]))*\\*+/)|(?://.*)", "")
+                .replaceAll("\"(.*?)\"", " \"$1\" ")
+                .replace("+", " + ")
+                .replace("-", " - ")
+                .replace("*", " * ")
+                .replace("/", " / ")
+                .replace("(", " ( ")
+                .replace(")", " ) ")
+                .replace("{", " { ")
+                .replace("}", " } ")
+                .replace(";", " ; ");
+
+                
+
         String[] parts = input.split("\\s+");
         List<String> tokens = new ArrayList<>();
 
@@ -36,7 +43,7 @@ public class Parser {
         }
 
         for (String token : tokens) {
-            System.out.println(token);
+            System.out.println("< "+token+" >");
         }
     }
 
