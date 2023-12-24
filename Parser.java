@@ -10,7 +10,7 @@ public class Parser {
 
     public static void tokenize(String input) {
         input = input.replaceAll("(?:/\\*(?:[^*]|(?:\\*+[^*/]))*\\*+/)|(?://.*)", "")
-                .replaceAll("\"(.*?)\"", " \"$1\" ")
+                .replaceAll("(\".*?\")", " $1 ")
                 .replace("+", " + ")
                 .replace("-", " - ")
                 .replace("*", " * ")
@@ -27,7 +27,9 @@ public class Parser {
         List<String> tokens = new ArrayList<>();
 
         for (String part : parts) {
-            if (KEYWORDS.contains(part)) {
+            if (part.startsWith("\"") && part.endsWith("\"")) {
+                tokens.add(part + " STRING_LITERAL");
+            } else if (KEYWORDS.contains(part)) {
                 tokens.add(part + " KEYWORD");
             } else if (OPERATORS.contains(part)) {
                 tokens.add(part + " OPERATOR");
