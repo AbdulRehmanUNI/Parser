@@ -59,8 +59,8 @@ public class Parser {
                 System.out.println("<" + TOKEN_CLASSES.get(part) + ", " + part + ">");
             } else if (part.startsWith("//")) {
                 System.out.println("<COMMENT, " + part + ">");
-            }else if(part.matches("[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?")){
-                System.out.println("<NUMBER, "+ part+">");
+            }else if (part.matches("[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?")) {
+                tokens.add("<NUMBER, " + part + ">");
             } else {
                 System.out.println("<UNKNOWN, " + part + ">");
             }
