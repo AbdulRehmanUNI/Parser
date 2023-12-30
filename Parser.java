@@ -95,6 +95,7 @@ public class Parser {
             } else {
                 String[] parts = newLine.split("\\s+");
                 for (String part : parts) {
+                    
                     part=part.trim();
                     part=part.replace("\\t","").replace(   "\\r","");
                     if (part.isEmpty()) continue;
@@ -140,9 +141,8 @@ public class Parser {
                         temp+=("^");
                         errors.add("\t"+temp+"\n");
                             
-                    } else {
-                        System.out.println("<ERROR, UNKNOWN token: " + part + ">");
-                    }// if-else-if ladder
+                     } 
+
             }//inner-for
         }//else
     }//outer-for
@@ -155,8 +155,6 @@ public class Parser {
 
 }//tokenize()
     
-
-
 
     public static String printOperators(String str){
         str=str.trim();  
