@@ -141,7 +141,7 @@ public class Parser {
                         temp+=("^");
                         errors.add("\t"+temp+"\n");
                             
-                     } 
+                     } //end of if-else-if ladder
 
             }//inner-for
         }//else
