@@ -1,11 +1,10 @@
 //skjdkandasldjlkas
 //djaskljdklasjdk
 
-
 if(test_1_1_12>=0){
     print("Hello World1"); 
 }else{
 int sum=0;
 for(int i=0 ; i<10; i=i+1){
-    sum=i+12.34r+21E-2+.21;
+    sum=i+12.34r+21E-2;
 } };
